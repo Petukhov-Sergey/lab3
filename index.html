@@ -11,37 +11,25 @@
 <body>
 	<div class="container">
 		<h1>Список дел</h1>
-		<div onclick="showDescription(this)">
-			<li>Элемент 1
-			</li>
-			<label class="info option"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-				eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-				ullamco
-				laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-				velit
-				esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
-				qui
-				officia
-				deserunt mollit anim id est laborum. </label>
+		<div id="taskContainer">
 		</div>
-		<div onclick="showDescription(this)">
-			<li>Элемент 2
-			</li>
-			<label class="info option"> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-				eiusmod
-				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-				ullamco
-				laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-				velit
-				esse
-				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa
-				qui
-				officia
-				deserunt mollit anim id est laborum. </label>
-		</div>
+		<button class="add" onclick="showForm()">Добавить задачу</button>
+		<form id="taskForm" style="display: none;">
+			<label class="form-title"> Добавление новой задачи</label>
+			<input type="text" id="newTask" placeholder="Введите название задачи">
+			<label> Выберите степень важности задачи</label>
+			<select id="importance" name="importance">
+				<option value="low">Неважно</option>
+				<option value="medium">Средне</option>
+				<option value="high">Важно</option>
+			</select>
+			<label> Выберите дату дедлайна</label>
+			<input type="date" id="deadline" name="deadline">
+			<textarea id="taskDescription" placeholder="Описание задачи"></textarea>
+			<button onclick="addTask()" class="add">Добавить</button>
+		</form>
 	</div>
+
 	<script src="index.js"></script>
 </body>
 
