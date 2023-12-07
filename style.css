@@ -73,7 +73,6 @@ select {
 	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
-	background: url('arrow-down.png') no-repeat right;
 	background-size: 20px;
 }
 
@@ -106,4 +105,28 @@ form {
 	height: 25px;
 	background-color: aqua;
 	cursor: pointer;
+}
+
+.finished {
+	text-decoration: line-through;
+	/* Зачеркнутый текст для завершенных задач */
+	color: #999;
+	/* Серый цвет для завершенных задач */
+}
+
+.d-flex {
+	display: flex;
+	justify-content: flex-end;
+	/* Выравнивание контента по правому краю */
+	padding: 10px;
+	/* Добавление отступов */
+}
+
+.showHideButton {
+	margin-right: 10px;
+	/* Добавление отступа справа */
+}
+
+.btn-success {
+	margin-bottom: 5px;
 }

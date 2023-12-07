@@ -1,87 +1,68 @@
-function showDescription(element) {
-	let description = element;
-	console.log(element);
-	if (description && description.style.display === "flex") {
-		description.style.display = "none";
-	} else if (description !== null) {
-		description.style.display = "flex";
-	}
-}
 window.onload = function () {
 	let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-	tasks.forEach(task => {
+	tasks.forEach((task, taskIndex) => {
+
+		// Create the DOM tree as a string
+		const taskHtml = `
+		<div class="position-relative">
+        <div class="${tasks[taskIndex].completed ? 'finished' : ''} ">
+            <li class="name">${task.name}</li>
+            <div class="info option">
+                <label class="infoUnit">Описание задачи:</label>
+                <input class="changed description" value="${task.description}">
+                <label class="infoUnit">Степень важности:</label>
+                <select class="changed importance">
+                    <option value="low" ${task.importance === 'low' ? 'selected' : ''}>Неавжно</option>
+                    <option value="medium" ${task.importance === 'medium' ? 'selected' : ''}>Средне</option>
+                    <option value="high" ${task.importance === 'high' ? 'selected' : ''}>Важно</option>
+                </select>
+                <label class="infoUnit">Дедлайн:</label>
+                <input class="changed deadline" value="${task.deadline}" type="date">
+                <button class="infoUnit update btn btn-success">Update:</button>
+                <button class="infoUnit delete btn btn-danger">Delete</button>
+            </div>
+        </div>
+		<div class="bottom-0 d-flex">
+    		<button class="showHideButton btn btn-primary rounded-2">Show/Hide Description</button>
+  		</div>
+`;
+
+
+		// Create a new DOM element from the HTML string
 		const taskElement = document.createElement('div');
-		//taskElement.setAttribute('onclick', 'showDescription(this)');
-		const btnSubmit = document.createElement('button');
-		btnSubmit.className = "submit";
+		taskElement.innerHTML = taskHtml;
 
-		const taskArea = document.createElement('div');
+		const hiddenInfo = taskElement.querySelector('.info.option');
+		const updateButton = taskElement.querySelector('.infoUnit.update');
+		updateButton.addEventListener('click', function () {
+			console.log("Button pressed");
+			let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+			task.description = document.querySelector('.changed.description').value;
+			task.importance = document.querySelector('.changed.importance').value;
+			task.deadline = document.querySelector('.changed.deadline').value;
+			console.log(task);
+			tasks[taskIndex] = task;
+			localStorage.setItem('tasks', JSON.stringify(tasks));
 
-		const taskName = document.createElement('li');
-		//taskName.setAttribute('onclick', 'showDescription(hiddenInfo)');
-		taskName.for = 'checkbox';
-		taskName.textContent = task.name;
+		});
 
+		// Add event listener to the "Delete" button
+		const deleteButton = taskElement.querySelector('.infoUnit.delete');
+		deleteButton.addEventListener('click', function () {
+			deleteTask(taskIndex);
+			taskElement.remove();
+		});
 
-		const hiddenInfo = document.createElement('div');
-		hiddenInfo.className = 'info option';
-		const taskDescriptionBase = document.createElement('label');
-		taskDescriptionBase.className = 'infoUnit';
-		taskDescriptionBase.textContent = "Описание задачи:";
-
-		const taskDescription = document.createElement('input');
-		taskDescription.value = task.description;
-
-		const importancyBase = document.createElement('label');
-		importancyBase.className = 'infoUnit';
-		importancyBase.textContent = 'Степень важности: '
-
-		const importancy = document.createElement('select');
-		importancy.value = task.importance;
-		const low = document.createElement('option');
-		low.value = "low";
-		low.textContent = "Неавжно";
-		const medium = document.createElement('option');
-		medium.value = "medium";
-		medium.textContent = "Средне";
-		const high = document.createElement('option');
-		high.value = "high";
-		high.textContent = "Важно";
-
-		const taskDeadlineBase = document.createElement('label');
-		taskDeadlineBase.className = 'infoUnit';
-		taskDeadlineBase.textContent = 'Дедлайн:';
-
-		const taskDeadline = document.createElement('input');
-		taskDeadline.value = task.deadline;
-		taskDeadline.type = "date";
-
-		const buttonUpdate = document.createElement('button');
-		buttonUpdate.className = 'infoUnit';
-		buttonUpdate.textContent = 'Update: '
-
-		// Append the elements to the task container
-		//taskElement.appendChild(btnSubmit);
-		const showHideButton = document.createElement('button');
-		showHideButton.textContent = 'Show/Hide Description';
+		// Add event listener to the "Show/Hide Description" button
+		const showHideButton = taskElement.querySelector('.showHideButton');
 		showHideButton.addEventListener('click', function () {
 			showDescription(hiddenInfo);
 		});
-		taskArea.appendChild(showHideButton);
-		taskElement.appendChild(taskArea);
-		taskArea.appendChild(taskName);
-		taskArea.appendChild(hiddenInfo);
-		hiddenInfo.appendChild(taskDescriptionBase);
-		hiddenInfo.appendChild(taskDescription);
-		hiddenInfo.appendChild(importancyBase);
-		hiddenInfo.appendChild(importancy);
-		importancy.appendChild(low);
-		importancy.appendChild(medium);
-		importancy.appendChild(high);
-		hiddenInfo.appendChild(taskDeadlineBase);
-		hiddenInfo.appendChild(taskDeadline);
-		hiddenInfo.appendChild(buttonUpdate);
 
+		const nameLabel = taskElement.querySelector(".name");
+		nameLabel.addEventListener('click', function () {
+			markTaskAsCompleted(taskIndex);
+		})
 
 		document.getElementById('taskContainer').appendChild(taskElement);
 	});
@@ -97,6 +78,18 @@ function showForm() {
 	}
 }
 
+function showDescription(element) {
+	if (element instanceof Element) {
+		if (element.style.display === "flex") {
+			element.style.display = "none";
+		} else {
+			element.style.display = "flex";
+		}
+	} else {
+		console.error("Invalid element");
+	}
+}
+
 function addTask() {
 	const newTask = document.getElementById('newTask').value;
 	const importance = document.getElementById('importance').value;
@@ -106,13 +99,33 @@ function addTask() {
 		name: newTask,
 		importance: importance,
 		deadline: deadline,
-		description: taskDescription
+		description: taskDescription,
+		completed: false
 	};
 	let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 	tasks.push(task);
 	localStorage.setItem('tasks', JSON.stringify(tasks));
 	document.getElementById('taskName').value = '';
-	document.getElementById('importance').value = 'low';
 	document.getElementById('deadline').value = '';
 	document.getElementById('taskDescription').value = '';
+}
+
+function deleteTask(index) {
+	let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+	tasks.splice(index, 1);
+	localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+
+function markTaskAsCompleted(index) {
+	let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+	tasks[index].completed = !tasks[index].completed;
+	console.log(tasks[index]);
+	localStorage.setItem('tasks', JSON.stringify(tasks));
+	const taskElement = document.getElementById('taskContainer').children[index].children[0].children[0];
+	if (tasks[index].completed) {
+		taskElement.classList.add('finished');
+	} else {
+		taskElement.classList.remove('finished');
+	}
 }
